@@ -12,10 +12,17 @@ import android.view.View;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.bridge.ReadableArray;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 
 public class GoogleCastButtonManager extends SimpleViewManager<MediaRouteButton> {
 
@@ -58,6 +65,16 @@ public class GoogleCastButtonManager extends SimpleViewManager<MediaRouteButton>
         } else {
             button.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public Map<String, Integer> getCommandsMap() {
+        return MapBuilder.of("click", 1);
+    }
+
+    @Override
+    public void receiveCommand(MediaRouteButton view, int commandId, @Nullable ReadableArray args) {
+        if (commandId == 1) view.performClick();
     }
 
     // https://stackoverflow.com/a/41496796/384349

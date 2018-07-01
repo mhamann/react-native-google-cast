@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { requireNativeComponent } from 'react-native';
+import { requireNativeComponent, findNodeHandle, UIManager } from 'react-native';
 
 /**
  * Button that presents the Cast icon.
@@ -13,6 +13,14 @@ import { requireNativeComponent } from 'react-native';
  * @see [CastButtonFactory](https://developers.google.com/android/reference/com/google/android/gms/cast/framework/CastButtonFactory) & [MediaRouteButton](https://developer.android.com/reference/android/support/v7/app/MediaRouteButton.html) (Android)
  */
 class CastButton extends React.Component {
+  click = () => {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      UIManager.RNGoogleCastButton.Commands.click,
+      [],
+    )
+  }
+
   render() {
     return <GoogleCastButton {...this.props} />;
   }

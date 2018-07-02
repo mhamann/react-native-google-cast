@@ -1,19 +1,28 @@
 package com.googlecast;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.MediaRouteButton;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.bridge.ReadableArray;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastState;
 import com.google.android.gms.cast.framework.CastStateListener;
+
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 
 public class GoogleCastButtonManager extends SimpleViewManager<MediaRouteButton> {
 
@@ -58,6 +67,16 @@ public class GoogleCastButtonManager extends SimpleViewManager<MediaRouteButton>
         }
     }
 
+    @Override
+    public Map<String, Integer> getCommandsMap() {
+        return MapBuilder.of("click", 1);
+    }
+
+    @Override
+    public void receiveCommand(MediaRouteButton view, int commandId, @Nullable ReadableArray args) {
+        if (commandId == 1) view.performClick();
+    }
+
     // https://stackoverflow.com/a/41496796/384349
     private class ColorableMediaRouteButton extends MediaRouteButton {
         protected Drawable mRemoteIndicatorDrawable;
@@ -81,8 +100,14 @@ public class GoogleCastButtonManager extends SimpleViewManager<MediaRouteButton>
         }
 
         public void applyTint(Integer color) {
-            Drawable wrapDrawable = DrawableCompat.wrap(mRemoteIndicatorDrawable);
-            DrawableCompat.setTint(wrapDrawable, color);
+            ContextThemeWrapper ctw = new ContextThemeWrapper(super.getContext(), android.support.v7.mediarouter.R.style.Theme_MediaRouter);
+            TypedArray a = ctw.obtainStyledAttributes(null,
+                android.support.v7.mediarouter.R.styleable.MediaRouteButton, android.support.v7.mediarouter.R.attr.mediaRouteButtonStyle, 0);
+            Drawable drawable = a.getDrawable(
+                android.support.v7.mediarouter.R.styleable.MediaRouteButton_externalRouteEnabledDrawable);
+            a.recycle();
+            DrawableCompat.setTint(drawable, color);
+            super.setRemoteIndicatorDrawable(drawable);
         }
     }
 }
